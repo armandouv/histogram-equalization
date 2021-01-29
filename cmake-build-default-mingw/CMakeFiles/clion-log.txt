@@ -1,0 +1,1 @@
+CMakeLists.txt not found in C:\Users\armau\OneDrive\Documentos\Escuela\EDA 2\histogram-equalization Select CMakeLists.txt
