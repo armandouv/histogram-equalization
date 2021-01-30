@@ -18,19 +18,19 @@
 
 #define QUALITY 100
 
-unsigned char *generate_histogram(unsigned char *image, long size, int number_of_channels);
+long *generate_histogram(unsigned char *image, long size, int number_of_channels);
 
-unsigned char *generate_empty_unsigned_char_array(long length);
+unsigned char *generate_empty_unsigned_char_array(long size);
 
 long *generate_empty_long_array(long length);
 
-long *get_cumulative_distribution(unsigned char *histogram);
+long *get_cumulative_distribution(long *histogram);
 
 long get_minimum(long *cumulative_distribution);
 
 long get_equalized_value(long value, long minimum, double factor);
 
-long *get_equalized_cumulative_distribution(long *cumulative_distribution, long minimum, int width, int height);
+long *get_equalized_cumulative_distribution(long *cumulative_distribution, long minimum, long size);
 
 unsigned char *generate_image(unsigned char *original_image, int number_of_channels, long *equalized_cumulative_distribution, long size);
 
@@ -59,12 +59,12 @@ int main(int argc, char *argv[])
     printf("Numero de canales: %d\n", number_of_channels);
 
     long size = width * height;
-    unsigned char *histogram = generate_histogram(image, size, number_of_channels);
+    long *histogram = generate_histogram(image, size, number_of_channels);
     long *cumulative_distribution = get_cumulative_distribution(histogram);
     long cumulative_distribution_minimum = get_minimum(cumulative_distribution);
-    long *equalized_cumulative_distribution = get_equalized_cumulative_distribution(cumulative_distribution, cumulative_distribution_minimum, width, height);
+    long *equalized_cumulative_distribution = get_equalized_cumulative_distribution(cumulative_distribution, cumulative_distribution_minimum, size);
     unsigned char *new_image = generate_image(image, number_of_channels, equalized_cumulative_distribution, size);
-    unsigned char *new_histogram = generate_histogram(new_image, size, number_of_channels);
+    long *new_histogram = generate_histogram(new_image, size, number_of_channels);
     // create path with suffix
     // Generate new image
     const char *image_name = "./out/caca.jpg";
@@ -73,11 +73,11 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-unsigned char *generate_empty_unsigned_char_array(long length)
+unsigned char *generate_empty_unsigned_char_array(long size)
 {
-    unsigned char *empty = malloc(sizeof(unsigned char) * length);
+    unsigned char *empty = malloc(sizeof(unsigned char) * size);
 
-    for (int i = 0; i < length; ++i)
+    for (int i = 0; i < size; ++i)
     {
         empty[i] = 0;
     }
@@ -98,19 +98,19 @@ long *generate_empty_long_array(long size)
 }
 
 
-unsigned char *generate_histogram(unsigned char *image, long size, int number_of_channels)
+long *generate_histogram(unsigned char *image, long size, int number_of_channels)
 {
-    unsigned char *histogram = generate_empty_unsigned_char_array(MAX_COLOR_VALUE);
+    long *histogram = generate_empty_long_array(MAX_COLOR_VALUE);
 
     for (int i = 0; i < size * number_of_channels; i += number_of_channels)
     {
-        histogram[image[i]]++;
+        histogram[(int)image[i]]++;
     }
 
     return histogram;
 }
 
-long *get_cumulative_distribution(unsigned char *histogram)
+long *get_cumulative_distribution(long *histogram)
 {
     long *cumulative_distribution = generate_empty_long_array(MAX_COLOR_VALUE);
 
@@ -135,15 +135,15 @@ long get_minimum(long *cumulative_distribution)
 
 long get_equalized_value(long value, long minimum, double factor)
 {
-    return round((value - minimum) * factor) + 1;
+    return (long) round( (double)(value - minimum) * factor) + 1;
 }
 
-long *get_equalized_cumulative_distribution(long *cumulative_distribution, long minimum, int width, int height)
+long *get_equalized_cumulative_distribution(long *cumulative_distribution, long minimum, long size)
 {
     long *equalized_cumulative_distribution = generate_empty_long_array(MAX_COLOR_VALUE);
-
-    double FACTOR = (MAX_COLOR_VALUE - 2) / ((width * height) - minimum);
-
+    double numerator = (double) MAX_COLOR_VALUE - 2;
+    double denominator = (double) size - minimum;
+    double FACTOR = numerator / denominator;
 
     for (int i = 0; i < MAX_COLOR_VALUE; ++i)
     {
@@ -157,11 +157,11 @@ unsigned char *generate_image(unsigned char *original_image, int number_of_chann
 {
     unsigned char *new_image = generate_empty_unsigned_char_array(size * number_of_channels);
 
-    for (int i = 0; i < size * number_of_channels; i++)
+    for (int i = 0; i < size * number_of_channels; i += number_of_channels)
     {
         unsigned char original_value = original_image[i];
-        if (i % number_of_channels == 0) new_image[i] = equalized_cumulative_distribution[original_value];
-        else new_image[i] = original_value;
+        if (i % number_of_channels == 0) new_image[i] = (unsigned char) equalized_cumulative_distribution[original_value];
+        else new_image[i] = (unsigned char) original_value;
     }
 
     return new_image;
