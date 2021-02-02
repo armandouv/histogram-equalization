@@ -10,14 +10,16 @@ def generate_plots(img_name, suffix):
         original_frequencies = [int(row[1]) for row in rows]
         new_frequencies = [int(row[2]) for row in rows]
 
-    fig = plt.subplots()
-    plt.bar(color_values, original_frequencies, label='Original')
-    plt.bar(color_values, new_frequencies, label='Equalized')
-    plt.legend()
-    plt.xlabel("Color value")
-    plt.ylabel("Frequencies")
-    plt.title("Histogram (" + suffix + ")")
-    plt.savefig(img_name + "_histogram_" + suffix.lower() + "_plot.png")
+    def create_plot_image(y_values, name):
+        fig = plt.subplots()
+        plt.bar(color_values, y_values)
+        plt.xlabel("Color value")
+        plt.ylabel("Frequencies")
+        plt.title("Histogram (" + suffix + ")")
+        plt.savefig(img_name + "_histogram_" + suffix.lower() + "_" + name + "_plot.png")
+
+    create_plot_image(original_frequencies, "original")
+    create_plot_image(new_frequencies, "new")
 
 
 if __name__ == '__main__':
