@@ -12,6 +12,7 @@
 #include "../../util/filenames.h"
 #include "../../util/generate_array.h"
 #include "../../util/constants.h"
+#include "../../util/get_equalized_value.h"
 #include "../../stb-master/stb_image_write.h"
 
 double equalize_image_parallel(unsigned char *image, int width, int height, int number_of_channels, char *image_name)
@@ -34,8 +35,12 @@ double equalize_image_parallel(unsigned char *image, int width, int height, int 
     generate_image_parallel(image, new_image, number_of_channels, cumulative_distribution, size);
     generate_histogram_parallel(new_histogram, new_image, size, number_of_channels);
     end = omp_get_wtime();
-
-    /*#pragma omp parallel
+    /*long cumulative_distribution_minimum;
+    double numerator = (double) MAX_COLOR_VALUE - 2;
+    double denominator;
+    double FACTOR;
+    start = omp_get_wtime();
+    #pragma omp parallel
     {
         // Generate histogram
         #pragma omp for reduction(+:histogram[:MAX_COLOR_VALUE])
@@ -66,7 +71,7 @@ double equalize_image_parallel(unsigned char *image, int width, int height, int 
             else new_image[i] = (unsigned char) original_value;
         }
         // Generate new image histogram.
-        #pragma omp for reduction(+:histogram[:MAX_COLOR_VALUE])
+        #pragma omp for reduction(+:new_histogram[:MAX_COLOR_VALUE])
         for (int i = 0; i < size * number_of_channels; i += number_of_channels)
         {
             new_histogram[new_image[i]]++;
