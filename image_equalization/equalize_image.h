@@ -1,0 +1,10 @@
+//
+// Created by armau on 01/02/2021.
+//
+
+#ifndef HISTOGRAM_EQUALIZATION_EQUALIZE_IMAGE_H
+#define HISTOGRAM_EQUALIZATION_EQUALIZE_IMAGE_H
+
+int equalize_image(char* image_path);
+
+#endif //HISTOGRAM_EQUALIZATION_EQUALIZE_IMAGE_H

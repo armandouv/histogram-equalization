@@ -1,0 +1,10 @@
+//
+// Created by armau on 01/02/2021.
+//
+
+#ifndef HISTOGRAM_EQUALIZATION_GET_FIRST_NONZERO_H
+#define HISTOGRAM_EQUALIZATION_GET_FIRST_NONZERO_H
+
+long get_first_nonzero(long *histogram);
+
+#endif //HISTOGRAM_EQUALIZATION_GET_FIRST_NONZERO_H
