@@ -2,6 +2,7 @@
 // Created by armau on 01/02/2021.
 //
 #include "sequential/equalize_image_sequential.h"
+#include "parallel/equalize_image_parallel.h"
 #include "../util/filenames.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -31,8 +32,10 @@ int equalize_image(char* image_path)
     printf("Tamano: %d\n", width * height);
 
     double sequential_time = equalize_image_sequential(image, width, height, number_of_channels, image_name);
+    double parallel_time = equalize_image_parallel(image, width, height, number_of_channels, image_name);
 
     printf("\nTiempo secuencial: %f\n", sequential_time);
+    printf("Tiempo paralelo: %f\n", parallel_time);
 
     stbi_image_free(image);
     free(image_name);
