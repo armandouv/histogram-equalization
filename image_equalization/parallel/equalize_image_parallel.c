@@ -78,11 +78,18 @@ double equalize_image_parallel(unsigned char *image, int width, int height, int 
         }
     }
     end = omp_get_wtime();*/
-
+    double start_csv = omp_get_wtime();
     generate_csv(histogram, new_histogram, image_name, "_parallel");
+    double end_csv = omp_get_wtime();
 
-    char *new_sequential_name = generate_new_filename(image_name, "_eq_parallel.jpg");
-    stbi_write_jpg(new_sequential_name, width, height, number_of_channels, new_image, QUALITY);
+    char *new_parallel_name = generate_new_filename(image_name, "_eq_parallel.jpg");
+
+    double start_image_generation = omp_get_wtime();
+    stbi_write_jpg(new_parallel_name, width, height, number_of_channels, new_image, QUALITY);
+    double end_image_generation = omp_get_wtime();
+
+    printf("\nTiempo de generacion de csv (paralelo): %f\n", end_csv - start_csv);
+    printf("Tiempo de generacion de imagen (paralelo): %f\n", end_image_generation - start_image_generation);
 
     free(histogram);
     free(new_histogram);

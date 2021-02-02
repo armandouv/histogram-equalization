@@ -11,6 +11,7 @@
 #include "../../util/generate_array.h"
 #include "../../util/constants.h"
 #include "../../stb-master/stb_image_write.h"
+#include <stdio.h>
 
 double equalize_image_sequential(unsigned char *image, int width, int height, int number_of_channels, char *image_name)
 {
@@ -31,10 +32,18 @@ double equalize_image_sequential(unsigned char *image, int width, int height, in
 
     double end = omp_get_wtime();
 
+    double start_csv = omp_get_wtime();
     generate_csv(histogram, new_histogram, image_name, "_sequential");
+    double end_csv = omp_get_wtime();
 
     char *new_sequential_name = generate_new_filename(image_name, "_eq_sequential.jpg");
+
+    double start_image_generation = omp_get_wtime();
     stbi_write_jpg(new_sequential_name, width, height, number_of_channels, new_image, QUALITY);
+    double end_image_generation = omp_get_wtime();
+
+    printf("\nTiempo de generacion de csv (secuencial): %f\n", end_csv - start_csv);
+    printf("Tiempo de generacion de imagen (secuencial): %f\n", end_image_generation - start_image_generation);
 
     free(histogram);
     free(new_histogram);
