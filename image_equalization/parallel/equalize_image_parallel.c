@@ -62,6 +62,7 @@ double equalize_image_parallel(unsigned char *image, int width, int height, int 
         {
             cumulative_distribution[i] = get_equalized_value(cumulative_distribution[i], cumulative_distribution_minimum, FACTOR);
         }
+        barrier
         // Generate new image.
         #pragma omp for
         for (int i = 0; i < size * number_of_channels; i++)
@@ -70,6 +71,7 @@ double equalize_image_parallel(unsigned char *image, int width, int height, int 
             if (i % number_of_channels == 0) new_image[i] = (unsigned char) cumulative_distribution[original_value];
             else new_image[i] = (unsigned char) original_value;
         }
+        barrier
         // Generate new image histogram.
         #pragma omp for reduction(+:new_histogram[:MAX_COLOR_VALUE])
         for (int i = 0; i < size * number_of_channels; i += number_of_channels)
