@@ -44,7 +44,7 @@
 
 *.docx
 *.zip
-/idea
+/.idea
 
 # Kernel Module Compile Results
 *.mod*
